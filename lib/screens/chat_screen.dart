@@ -63,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
             try {
               if (Navigator.canPop(context)) Navigator.pop(context);
             } catch (e) {
-              log('ErrorPop: $e');
+              log('Error: $e');
             }
           });
         },

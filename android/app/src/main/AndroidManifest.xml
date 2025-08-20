@@ -1,10 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    package=""com.aniket.chitchat_message"">
     
     <!-- internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
     
     <application
-        android:label="Apna Chat"
+        android:label="Chit Chat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

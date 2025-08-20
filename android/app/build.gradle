@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.harshRajpurohit.we_chat"
+    namespace = "com.aniket.chitchat_message"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.harshRajpurohit.we_chat"
+        applicationId = "com.aniket.chitchat_message"
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -30,7 +30,6 @@ class _AiScreenState extends State<AiScreen> {
     if (_textC.text.isNotEmpty) {
       //user
       _list.add(AiMessage(msg: _textC.text, msgType: MessageType.user));
-      _list.add(AiMessage(msg: '', msgType: MessageType.bot));
       setState(() {});
 
       _scrollDown();
@@ -38,7 +37,6 @@ class _AiScreenState extends State<AiScreen> {
       final res = await _getAnswer(_textC.text);
 
       //ai bot
-      _list.removeLast();
       _list.add(AiMessage(msg: res, msgType: MessageType.bot));
       _scrollDown();
 
@@ -62,7 +60,7 @@ class _AiScreenState extends State<AiScreen> {
     try {
       //TODO - Google Gemini API Key - https://aistudio.google.com/app/apikey
 
-      const apiKey = '';
+      const apiKey = 'AIzaSyCI1TvtCNNJXAWxpwaKZcDc5D9xaCrrmCU';
 
       log('api key: $apiKey');
 
@@ -114,18 +112,18 @@ class _AiScreenState extends State<AiScreen> {
           //text input field
           Expanded(
               child: TextFormField(
-            controller: _textC,
-            textAlign: TextAlign.center,
-            onTapOutside: (e) => FocusScope.of(context).unfocus(),
-            decoration: InputDecoration(
-                fillColor: Theme.of(context).scaffoldBackgroundColor,
-                filled: true,
-                isDense: true,
-                hintText: 'Ask me anything you want...',
-                hintStyle: const TextStyle(fontSize: 14),
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)))),
-          )),
+                controller: _textC,
+                textAlign: TextAlign.center,
+                onTapOutside: (e) => FocusScope.of(context).unfocus(),
+                decoration: InputDecoration(
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
+                    filled: true,
+                    isDense: true,
+                    hintText: 'Ask me anything you want...',
+                    hintStyle: const TextStyle(fontSize: 14),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
+              )),
 
           //for adding some space
           const SizedBox(width: 8),

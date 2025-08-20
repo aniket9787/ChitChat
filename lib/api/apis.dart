@@ -13,10 +13,7 @@ import '../models/message.dart';
 import 'notification_access_token.dart';
 
 class APIs {
-  // for authentication
-  static FirebaseAuth get auth => FirebaseAuth.instance;
-
-  // for accessing cloud firestore database
+  static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // for accessing firebase storage
@@ -27,7 +24,7 @@ class APIs {
       id: user.uid,
       name: user.displayName.toString(),
       email: user.email.toString(),
-      about: "Hey, I'm using We Chat!",
+      about: "Hey, I'm using Chit Chat!",
       image: user.photoURL.toString(),
       createdAt: '',
       isOnline: false,
@@ -77,7 +74,7 @@ class APIs {
       };
 
       // Firebase Project > Project Settings > General Tab > Project ID
-      const projectID = 'we-chat-75f13';
+      const projectID = 'chitchat-message';
 
       // get firebase admin token
       final bearerToken = await NotificationAccessToken.getToken;
@@ -162,7 +159,7 @@ class APIs {
         id: user.uid,
         name: user.displayName.toString(),
         email: user.email.toString(),
-        about: "Hey, I'm using We Chat!",
+        about: "Hey, I'm using Chit Chat!",
         image: user.photoURL.toString(),
         createdAt: time,
         isOnline: false,
