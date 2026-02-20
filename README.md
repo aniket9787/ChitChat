@@ -62,7 +62,7 @@ Chichat is a modern **Flutter + Firebase** real-time messaging application with 
 
 ## ⬇️ Download APK
 
-[![Download APK](https://img.shields.io/badge/Download-APK-blue?style=flat)](https://github.com/aniket9787/ChitChat/releases/download/v1/ChitChat-v1.0.apk)
+[![Download APK](https://github.com/aniket9787/ChitChat/releases/download/v1/ChitChat-v1.apk)]
 
 👉 Click the badge above to download the APK directly!
 
