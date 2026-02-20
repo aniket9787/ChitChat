@@ -22,19 +22,29 @@ Chichat is a modern **Flutter + Firebase** real-time messaging application with 
 
 ## 📱 Screenshots
 
-![Screenshot 1](screenshots/1.png)
-![Screenshot 2](screenshots/2.png)
-![Screenshot 3](screenshots/3.png)
-![Screenshot 4](screenshots/4.png)
-![Screenshot 5](screenshots/5.png)
-![Screenshot 6](screenshots/6.png)
-![Screenshot 7](screenshots/7.png)
-![Screenshot 8](screenshots/8.png)
-![Screenshot 9](screenshots/9.png)
-![Screenshot 10](screenshots/10.png)
-![Screenshot 11](screenshots/11.png)
-![Screenshot 12](screenshots/12.png)
+<p align="center">
+  <img src="screenshots/1.png" style="width:180px; height:auto;" />
+  <img src="screenshots/2.png" style="width:180px; height:auto;" />
+  <img src="screenshots/3.png" style="width:180px; height:auto;" />
+</p>
 
+<p align="center">
+  <img src="screenshots/4.png" style="width:180px; height:auto;" />
+  <img src="screenshots/5.png" style="width:180px; height:auto;" />
+  <img src="screenshots/6.png" style="width:180px; height:auto;" />
+</p>
+
+<p align="center">
+  <img src="screenshots/7.png" style="width:180px; height:auto;" />
+  <img src="screenshots/8.png" style="width:180px; height:auto;" />
+  <img src="screenshots/9.png" style="width:180px; height:auto;" />
+</p>
+
+<p align="center">
+  <img src="screenshots/10.png" style="width:180px; height:auto;" />
+  <img src="screenshots/11.png" style="width:180px; height:auto;" />
+  <img src="screenshots/12.png" style="width:180px; height:auto;" />
+</p>
 
 ---
 
@@ -52,8 +62,9 @@ Chichat is a modern **Flutter + Firebase** real-time messaging application with 
 
 ## ⬇️ Download APK
 
-👉 Download the latest APK from GitHub Releases:  
-https://github.com/aniket9787/ChitChat/releases
+[![Download APK](https://img.shields.io/badge/Download-APK-blue?style=flat)](https://github.com/aniket9787/ChitChat/releases/download/v1/ChitChat-v1.0.apk)
+
+👉 Click the badge above to download the APK directly!
 
 ---
 
