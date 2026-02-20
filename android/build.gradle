@@ -1,3 +1,5 @@
+// Root-level build.gradle (SAFE & CLEAN)
+
 allprojects {
     repositories {
         google()
@@ -5,14 +7,21 @@ allprojects {
     }
 }
 
+// ✅ Keep build output outside android/ (Flutter best practice)
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// ✅ Ensure :app is evaluated first (Flutter requirement)
 subprojects {
     project.evaluationDependsOn(":app")
 }
 
+
+
+// ✅ Clean task
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

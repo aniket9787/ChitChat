@@ -1,12 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 
 import '../helper/dialogs.dart';
-import '../main.dart';
 import '../models/message.dart';
-import '../widgets/ai_message_card.dart';
 
 class AiScreen extends StatefulWidget {
   const AiScreen({super.key});
@@ -16,137 +15,214 @@ class AiScreen extends StatefulWidget {
 }
 
 class _AiScreenState extends State<AiScreen> {
-  //  final _c = ChatController();
   final _textC = TextEditingController();
   final _scrollC = ScrollController();
 
   final _list = <AiMessage>[
-    AiMessage(msg: 'Hello, How can I help you?', msgType: MessageType.bot)
+    AiMessage(msg: 'Hello 👋, How can I help you?', msgType: MessageType.bot)
   ];
 
+  final List<Map<String, String>> _chatHistory = [
+    {
+      "role": "system",
+      "content":
+      "You are a helpful AI assistant. Reply short and clean."
+    }
+  ];
+
+  // ================= ASK =================
   Future<void> _askQuestion() async {
-    _textC.text = _textC.text.trim();
+    final text = _textC.text.trim();
 
-    if (_textC.text.isNotEmpty) {
-      //user
-      _list.add(AiMessage(msg: _textC.text, msgType: MessageType.user));
-      setState(() {});
-
-      _scrollDown();
-
-      final res = await _getAnswer(_textC.text);
-
-      //ai bot
-      _list.add(AiMessage(msg: res, msgType: MessageType.bot));
-      _scrollDown();
-
-      setState(() {});
-
-      _textC.text = '';
+    if (text.isEmpty) {
+      Dialogs.showSnackbar(context, 'Ask Something!');
       return;
     }
 
-    Dialogs.showSnackbar(context, 'Ask Something!');
+    _list.add(AiMessage(msg: text, msgType: MessageType.user));
+    _chatHistory.add({"role": "user", "content": text});
+
+    setState(() {});
+    _scrollDown();
+
+    _textC.clear();
+
+    // typing
+    _list.add(AiMessage(msg: "Typing...", msgType: MessageType.bot));
+    setState(() {});
+    _scrollDown();
+
+    final res = await _getAnswer();
+
+    _list.removeLast();
+
+    _list.add(AiMessage(msg: res, msgType: MessageType.bot));
+    _chatHistory.add({"role": "assistant", "content": res});
+
+    setState(() {});
+    _scrollDown();
   }
 
-  //for moving to end message
   void _scrollDown() {
-    _scrollC.animateTo(_scrollC.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500), curve: Curves.ease);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (_scrollC.hasClients) {
+        _scrollC.animateTo(
+          _scrollC.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
-  //get answer from google gemini ai
-  Future<String> _getAnswer(final String question) async {
+  // ================= API =================
+  Future<String> _getAnswer() async {
     try {
-      //TODO - Google Gemini API Key - https://aistudio.google.com/app/apikey
+      const apiKey = "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";
 
-      const apiKey = 'AIzaSyCI1TvtCNNJXAWxpwaKZcDc5D9xaCrrmCU';
-
-      log('api key: $apiKey');
-
-      if (apiKey.isEmpty) {
-        return 'Gemini API Key required\nChange in Ai Screen Codes';
-      }
-
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash-latest',
-        apiKey: apiKey,
+      final response = await http.post(
+        Uri.parse("https://openrouter.ai/api/v1/chat/completions"),
+        headers: {
+          "Authorization": "Bearer $apiKey",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "model": "openai/gpt-4o-mini",
+          "messages": _chatHistory,
+        }),
       );
 
-      final content = [Content.text(question)];
-      final res = await model.generateContent(content, safetySettings: [
-        SafetySetting(HarmCategory.dangerousContent, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.harassment, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.none),
-      ]);
-
-      log('res: ${res.text}');
-
-      return res.text!.trim();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data["choices"][0]["message"]["content"];
+      } else {
+        return "Error: ${response.statusCode}";
+      }
     } catch (e) {
-      log('getAnswerGeminiE: $e');
-      return 'Something went wrong (Try again in sometime)';
+      log("ERROR: $e");
+      return "Something went wrong!";
     }
-  }
-
-  @override
-  void dispose() {
-    _textC.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //app bar
+      backgroundColor: const Color(0xFFF2F4F7),
+
+      // 🔥 APPBAR (same like your screenshot but improved)
       appBar: AppBar(
-        title: const Text('Your AI Assistant'),
-      ),
-
-      //send message field & btn
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(children: [
-          //text input field
-          Expanded(
-              child: TextFormField(
-                controller: _textC,
-                textAlign: TextAlign.center,
-                onTapOutside: (e) => FocusScope.of(context).unfocus(),
-                decoration: InputDecoration(
-                    fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    filled: true,
-                    isDense: true,
-                    hintText: 'Ask me anything you want...',
-                    hintStyle: const TextStyle(fontSize: 14),
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)))),
-              )),
-
-          //for adding some space
-          const SizedBox(width: 8),
-
-          //send button
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: Colors.blue,
-            child: IconButton(
-              onPressed: _askQuestion,
-              icon: const Icon(Icons.rocket_launch_rounded,
-                  color: Colors.white, size: 28),
+        leading: const Icon(Icons.arrow_back),
+        centerTitle: true,
+        title: const Text("AI Assistant"),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.indigo],
             ),
-          )
-        ]),
+          ),
+        ),
       ),
 
-      //body
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scrollC,
-        padding: EdgeInsets.only(top: mq.height * .02, bottom: mq.height * .1),
-        children: _list.map((e) => AiMessageCard(message: e)).toList(),
+      body: Column(
+        children: [
+          // 🔥 CHAT AREA
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollC,
+              padding: const EdgeInsets.all(12),
+              itemCount: _list.length,
+              itemBuilder: (context, index) {
+                final msg = _list[index];
+
+                return Align(
+                  alignment: msg.msgType == MessageType.user
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Row(
+                    mainAxisAlignment:
+                    msg.msgType == MessageType.user
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      if (msg.msgType == MessageType.bot)
+                        const CircleAvatar(
+                          radius: 16,
+                          child: Icon(Icons.smart_toy, size: 18),
+                        ),
+
+                      const SizedBox(width: 6),
+
+                      Container(
+                        constraints:
+                        const BoxConstraints(maxWidth: 260),
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: msg.msgType == MessageType.user
+                              ? Colors.blue
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: msg.msgType == MessageType.bot
+                              ? Border.all(color: Colors.blue.shade200)
+                              : null,
+                        ),
+                        child: Text(
+                          msg.msg,
+                          style: TextStyle(
+                            color: msg.msgType == MessageType.user
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // 🔥 INPUT BAR (FIXED PROBLEM IN YOUR SCREENSHOT)
+          Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 2,
+                  color: Colors.black.withOpacity(.05),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textC,
+                    decoration: InputDecoration(
+                      hintText: "Ask anything...",
+                      filled: true,
+                      fillColor: const Color(0xFFF1F3F6),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  child: IconButton(
+                    onPressed: _askQuestion,
+                    icon: const Icon(Icons.send, color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
